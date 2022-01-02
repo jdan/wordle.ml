@@ -1,19 +1,11 @@
 open Wordle.Seacher
 
 let rules =
-  [ (* SIREN *)
-    Other ('s', 0)
-  ; Never 'i'
+  [ Other ('a', 0)
   ; Never 'r'
-  ; Never 'e'
-  ; Never 'n'
-
-  (* AULOS *)
-  ; Never 'a'
-  ; Never 'u'
-  ; Never 'l'
-  ; Other ('o', 3)
-  ; Other ('s', 4)
+  ; Never 'o'
+  ; Never 's'
+  ; Other ('e', 4)
   ]
 
 let rec read_lines () =
@@ -26,9 +18,11 @@ let rec read_lines () =
   else line :: read_lines ()
 
 let () =
-  read_lines ()
-  |> filter_words rules
-  |> sorted_candidates
+  let words = read_lines ()
+  in let freq = frequency_of_strs words
+  in
+  filter_words rules words
+  |> sorted_candidates freq
   |> List.iter (
     fun (word, score) ->
       word ^ " " ^ (string_of_int score) |> print_endline

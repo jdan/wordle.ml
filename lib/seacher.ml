@@ -114,10 +114,9 @@ let score freq str =
     chars
   * num_unique
 
-let sorted_candidates strs =
-  let freq = frequency_of_strs strs
-  in let with_scores =
-       List.map (fun str -> (str, score freq str)) strs
+let sorted_candidates freq strs =
+  let with_scores =
+    List.map (fun str -> (str, score freq str)) strs
   in List.sort
     ( fun (_, a) (_, b) ->
         b - a
