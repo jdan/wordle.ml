@@ -30,13 +30,11 @@ Many of the words returned by the program (those in `/usr/share/dict/words` on m
 
 It works okay! I cheated on day 197 starting with "SIREN"
 
-```
-Wordle 197 3/6
-
-🟨⬛⬛⬛⬛
-⬛⬛⬛🟨🟨
-🟩🟩🟩🟩🟩
-```
+> Wordle 197 3/6
+>
+> 🟨⬛⬛⬛⬛<br>
+> ⬛⬛⬛🟨🟨<br>
+> 🟩🟩🟩🟩🟩<br>
 
 ### example
 
@@ -136,9 +134,9 @@ cat /usr/share/dict/words | grep -E '^[a-z]{5}$' | dune exec bin/main.exe | head
 # wheat 65555
 ```
 
-CHEAT wins out against WHEAT (c's are more common), giving us a successful solution.
+CHEAT wins out against WHEAT (C's are more common), giving us a successful solution.
 
-🟨⬛⬛⬛🟨
-⬛🟨🟩🟨⬛
-⬛⬛🟩🟩🟩
+🟨⬛⬛⬛🟨<br>
+⬛🟨🟩🟨⬛<br>
+⬛⬛🟩🟩🟩<br>
 🟩🟩🟩🟩🟩
