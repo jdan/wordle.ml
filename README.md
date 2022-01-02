@@ -58,6 +58,16 @@ cat /usr/share/dict/words | grep -E '^[a-z]{5}$' | dune exec bin/main.exe | head
 
 Manually computing this, "AROSE" would get a pattern of 🟨⬛⬛⬛🟨. Modify `rules` accordingly and re-run:
 
+```ocaml
+let rules =
+  [ Other ('a', 0)
+  ; Never 'r'
+  ; Never 'o'
+  ; Never 's'
+  ; Other ('e', 4)
+  ]
+```
+
 ```sh
 cat /usr/share/dict/words | grep -E '^[a-z]{5}$' | dune exec bin/main.exe | head
 # laeti 80260
