@@ -2,6 +2,9 @@ type rule =
   | Exact of char * int
   | Other of char * int
   | Never of char
+  | AtLeast of char * int
+
+let explode s = String.to_seq s |> List.of_seq
 
 let predicate_of_rule = function
   | Exact (c, idx) ->
@@ -15,6 +18,13 @@ let predicate_of_rule = function
   | Never c -> fun str -> (
       String.index_from_opt str 0 c
       |> Option.is_none
+    )
+  | AtLeast (c, count) -> fun str -> (
+      ( explode str
+        |> List.filter ((=) c)
+        |> List.length
+      )
+      >= count
     )
 
 let rec predicate_of_rules rules str =
@@ -56,11 +66,25 @@ let%test _ =
     ["abc"; "def"; "afe"]
   = ["def"; "afe"]
 
-(* http://caml.inria.fr/pub/old_caml_site/FAQ/FAQ_EXPERT-eng.html#strings *)
-let explode s =
-  let rec exp i l =
-    if i < 0 then l else exp (i - 1) (s.[i] :: l) in
-  exp (String.length s - 1) []
+let%test "Multiple `Other`s do not denote repeats" =
+  filter_words
+    [ Other ('l', 0)
+    ; Other ('l', 1)
+    ]
+    ["hall"; "bail"]
+  = ["hall"; "bail"]
+
+(* It would be nice to filter out `bail` when we know
+   we have two L's, but Other is not precise enough
+*)
+let%test _ =
+  filter_words
+    [ Other ('l', 0)
+    ; Other ('l', 1)
+    ; AtLeast ('l', 2)
+    ]
+    ["hall"; "bail"; "parallel"]
+  = ["hall"; "parallel"]
 
 let frequency_of_str str =
   let tbl = Hashtbl.create 40 in

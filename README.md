@@ -32,6 +32,15 @@ These candidates are sorted by a very rough heuristic:
 
 Many of the words returned by the program (those in `/usr/share/dict/words` on my MacBook) are not in Wordle's dictionary. Just go down the list until you hit one.
 
+#### rules reference
+
+Given a target string, the following rules are used as follows:
+
+* `Exact (ch, idx)` - The character at index `idx` is equal to `ch`
+* `Other (ch, idx)` - Character `ch` is found at an index not equal to `idx`
+* `Never ch` - The character `ch` never appears in the string
+* `AtLeast (ch, count)` - The character `ch` appears in the string at least `count` times
+
 ### results
 
 It works okay! I cheated on day 197 starting with "SIREN"
