@@ -4,6 +4,12 @@ Cheating at [Wordle](https://www.powerlanguage.co.uk/wordle/) with OCaml.
 
 ### usage
 
+Grab dependencies from [opam](https://opam.ocaml.org)
+
+```sh
+opam install dune ppx_inline_test
+```
+
 Modify the `rules` list in `bin/main.ml`. Then run:
 
 ```sh
