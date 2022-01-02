@@ -5,11 +5,7 @@ type rule =
 
 let predicate_of_rule = function
   | Exact (c, idx) ->
-    fun str -> (
-        match String.index_from_opt str 0 c with
-        | None -> false
-        | Some found_idx -> idx = found_idx
-      )
+    fun str -> String.get str idx = c
   | Other (c, idx) ->
     fun str -> (
         match String.index_from_opt str 0 c with
