@@ -13,7 +13,7 @@ opam install dune ppx_inline_test
 Modify the `rules` list in `bin/main.ml`. Then run:
 
 ```sh
-cat /usr/share/dict/words | grep -E '^[a-z]{5}$' | dune exec bin/main.exe | head
+cat words.txt | dune exec bin/main.exe | head
 # upeat 71385
 # cheat 69860
 # theca 69860
@@ -29,8 +29,6 @@ cat /usr/share/dict/words | grep -E '^[a-z]{5}$' | dune exec bin/main.exe | head
 These candidates are sorted by a very rough heuristic:
 * For each letter, add the number of times that letter appears in any word
 * Multiply by the number of unique letters (more letters means more clues!)
-
-Many of the words returned by the program (those in `/usr/share/dict/words` on my MacBook) are not in Wordle's dictionary. Just go down the list until you hit one.
 
 #### rules reference
 
@@ -58,7 +56,7 @@ Let's image we have the word "CHEAT."
 Set `rules` to `[]` and run:
 
 ```sh
-cat /usr/share/dict/words | grep -E '^[a-z]{5}$' | dune exec bin/main.exe | head
+cat words.txt | dune exec bin/main.exe | head
 # arose 84745
 # orate 84735
 # arise 83645
@@ -84,7 +82,7 @@ let rules =
 ```
 
 ```sh
-cat /usr/share/dict/words | grep -E '^[a-z]{5}$' | dune exec bin/main.exe | head
+cat words.txt | dune exec bin/main.exe | head
 # laeti 80260
 # entia 79490
 # tenai 79490
@@ -116,7 +114,7 @@ let rules =
 ```
 
 ```sh
-cat /usr/share/dict/words | grep -E '^[a-z]{5}$' | dune exec bin/main.exe | head
+cat words.txt | dune exec bin/main.exe | head
 # upeat 71385
 # cheat 69860
 # theca 69860
@@ -154,7 +152,7 @@ let rules =
 ```
 
 ```sh
-cat /usr/share/dict/words | grep -E '^[a-z]{5}$' | dune exec bin/main.exe | head
+cat words.txt | dune exec bin/main.exe | head
 # cheat 69860
 # wheat 65555
 ```
