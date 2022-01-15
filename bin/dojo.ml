@@ -55,24 +55,98 @@ module Runner (B : Bot) = struct
     else
       guess :: run (B.update bot guess evaluation) target
 
-  let average dictionary =
+  let run_all dictionary =
     let bot = B.initialize dictionary
-    in let num_guesses =
-         List.map
-           ( fun word -> run bot word |> List.length )
-           dictionary
-    in (List.fold_left (+) 0 num_guesses |> float_of_int)
-       /. (List.length dictionary |> float_of_int)
+    in List.map
+      ( fun word -> run bot word )
+      dictionary
+
+  let run_sampled dictionary count =
+    let bot = B.initialize dictionary
+    in
+    List.init count (fun _ -> Random.int (List.length dictionary))
+    |> List.map (fun idx -> List.nth dictionary idx)
+    |> List.map
+      ( fun word -> run bot word )
+
+  let average dictionary =
+    let num_guesses = run_all dictionary |> List.map (List.length)
+    in
+    (List.fold_left (+) 0 num_guesses |> float_of_int)
+    /. (List.length dictionary |> float_of_int)
 end
 
-let target = "hatch"
+module GreedyAdieuBot : Bot = struct
+  type t =
+    { count : int
+    ; greedy : GreedyBot.t
+    }
+  let initialize dictionary =
+    { count = 0
+    ; greedy = GreedyBot.initialize dictionary
+    }
+  let guess {count; greedy} =
+    if count = 0
+    then "adieu"
+    else GreedyBot.guess greedy
+  let update {count; greedy} guess result =
+    { count = count + 1
+    ; greedy = GreedyBot.update greedy guess result
+    }
+end
+
+module GreedyAdieuUnityBot : Bot = struct
+  type t =
+    { count : int
+    ; greedy : GreedyBot.t
+    }
+  let initialize dictionary =
+    { count = 0
+    ; greedy = GreedyBot.initialize dictionary
+    }
+  let guess {count; greedy} =
+    if count = 0
+    then "adieu"
+    else if count = 1
+    then "unity"
+    else GreedyBot.guess greedy
+  let update {count; greedy} guess result =
+    { count = count + 1
+    ; greedy = GreedyBot.update greedy guess result
+    }
+end
+
+(* 4.9835800185 *)
 module GreedyRunner = Runner (GreedyBot)
+
+(* 5.01896392229 *)
+module GreedyAdieuRunner = Runner (GreedyAdieuBot)
+
+(* 5.30226641998 *)
+module GreedyAdieuUnityRunner = Runner (GreedyAdieuUnityBot)
+
+(*
+  let () =
+    let dictionary = read_lines ()
+    in
+    GreedyRunner.average dictionary
+    |> string_of_float
+    |> print_endline
+
+  $ time cat words.txt | dune exec bin/dojo.exe
+  4.9835800185
+  cat words.txt  0.00s user 0.00s system 7% cpu 0.076 total
+  dune exec bin/dojo.exe  97.13s user 0.15s system 99% cpu 1:37.28 total
+*)
 
 let () =
   let dictionary = read_lines ()
-  in GreedyRunner.average dictionary |> string_of_float |> print_endline
-(* in let guesses = GreedyRunner.run target dictionary
-   in
-   guesses
-   |> String.concat " -> "
+  in
+  Random.init 1000 ;
+  GreedyAdieuRunner.run_sampled dictionary 10
+  |> List.map (String.concat " -> ")
+  |> String.concat "\n"
+  |> print_endline
+(* GreedyAdieuUnityRunner.average dictionary
+   |> string_of_float
    |> print_endline *)
