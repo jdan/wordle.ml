@@ -39,22 +39,33 @@ module GreedyBot : Bot = struct
     }
 end
 
-let run target dictionary =
-  let rec step bot =
-    let guess = GreedyBot.guess bot
+module Runner (B : Bot) = struct
+  let rec run bot target =
+    let guess = B.guess bot
     in let evaluation = evaluate guess target
     in if evaluation = [Green; Green; Green; Green; Green]
     then [guess]
     else
-      guess :: step (GreedyBot.update bot guess evaluation)
-  in step (GreedyBot.initialize dictionary)
+      guess :: run (B.update bot guess evaluation) target
+
+  let average dictionary =
+    let bot = B.initialize dictionary
+    in let num_guesses =
+         List.map
+           ( fun word -> run bot word |> List.length )
+           dictionary
+    in (List.fold_left (+) 0 num_guesses |> float_of_int)
+       /. (List.length dictionary |> float_of_int)
+end
 
 let target = "hatch"
+module GreedyRunner = Runner (GreedyBot)
 
 let () =
   let dictionary = read_lines ()
-  in let guesses = run target dictionary
-  in
-  guesses
-  |> String.concat " -> "
-  |> print_endline
+  in GreedyRunner.average dictionary |> string_of_float |> print_endline
+(* in let guesses = GreedyRunner.run target dictionary
+   in
+   guesses
+   |> String.concat " -> "
+   |> print_endline *)
