@@ -1,11 +1,11 @@
 open Wordle.Seacher
+open Wordle.Evaluator
 
+(* Finding the word "great" *)
 let rules =
-  [ Other ('a', 0)
-  ; Never 'r'
-  ; Never 'o'
-  ; Never 's'
-  ; Other ('e', 4)
+  [ ("aeros", [Yellow; Yellow; Yellow; Black; Black])
+  ; ("raile", [Yellow; Yellow; Black; Black; Yellow])
+  ; ("tread", [Yellow; Green; Green; Green; Black])
   ]
 
 let rec read_lines () =
@@ -21,7 +21,7 @@ let () =
   let words = read_lines ()
   in let freq = frequency_of_strs words
   in
-  filter_words rules words
+  filter_words2 rules words
   |> sorted_candidates freq
   |> List.iter (
     fun (word, score) ->

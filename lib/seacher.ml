@@ -1,10 +1,11 @@
+open Util
+open Evaluator
+
 type rule =
   | Exact of char * int
   | Other of char * int
   | Never of char
   | AtLeast of char * int
-
-let explode s = String.to_seq s |> List.of_seq
 
 let predicate_of_rule = function
   | Exact (c, idx) ->
@@ -85,6 +86,22 @@ let%test _ =
     ]
     ["hall"; "bail"; "parallel"]
   = ["hall"; "parallel"]
+
+(* Improved filter using Evaluator *)
+let rec filter_words2 results = function
+  | [] -> []
+  | words ->
+    let matching_pattern guess pattern =
+      List.filter (
+        fun candidate ->
+          evaluate guess candidate = pattern
+      )
+    in ( match results with
+        | [] -> words
+        | (guess, pattern)::rest ->
+          matching_pattern guess pattern words
+          |> filter_words2 rest
+      )
 
 let frequency_of_str str =
   let tbl = Hashtbl.create 40 in
