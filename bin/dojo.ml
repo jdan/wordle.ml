@@ -19,23 +19,30 @@ module GreedyBot : Bot = struct
     }
 
   let initialize dictionary =
-    { freq = frequency_of_strs dictionary
-    ; candidates = dictionary
+    let freq = frequency_of_strs dictionary
+    in
+    { freq = freq
+    ; candidates =
+        filter_words2 [] dictionary
+        |> sorted_candidates freq
+        |> List.map fst
     ; history = []
     }
 
-  let guess { freq; candidates; history } =
-    match (
-      filter_words2 history candidates
-      |> sorted_candidates freq
-    ) with
+  let guess { candidates; _ } =
+    match candidates with
     | [] -> raise NoRemainingWordsException
-    | (best, _) :: _ -> best
+    | best::_ -> best
 
-  let update ({history; _} as me) attempt result =
-    (* TODO: trim down candidates *)
-    { me with
-      history = (attempt, result) :: history
+  let update {history; freq; candidates} attempt result =
+    let new_history = (attempt, result) :: history
+    in
+    { freq = freq
+    ; candidates =
+        filter_words2 new_history candidates
+        |> sorted_candidates freq
+        |> List.map fst
+    ;  history = new_history
     }
 end
 
