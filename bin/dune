@@ -1,4 +1,11 @@
 (executable
  (public_name wordle)
  (name main)
+ (modules main)
+ (libraries wordle))
+
+(executable
+ (public_name wordle)
+ (name dojo)
+ (modules dojo)
  (libraries wordle))

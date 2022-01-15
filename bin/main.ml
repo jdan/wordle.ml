@@ -1,5 +1,6 @@
 open Wordle.Seacher
 open Wordle.Evaluator
+open Wordle.Util
 
 (* Finding the word "great" *)
 let rules =
@@ -7,15 +8,6 @@ let rules =
   ; ("raile", [Yellow; Yellow; Black; Black; Yellow])
   ; ("tread", [Yellow; Green; Green; Green; Black])
   ]
-
-let rec read_lines () =
-  let line = try
-      read_line ()
-    with End_of_file -> ""
-  in
-  if line = ""
-  then []
-  else line :: read_lines ()
 
 let () =
   let words = read_lines ()
