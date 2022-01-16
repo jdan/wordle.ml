@@ -46,6 +46,61 @@ module GreedyBot : Bot = struct
     }
 end
 
+module GreedyNoRepeats : Bot = struct
+  type t =
+    { freq : (char, int) Hashtbl.t
+    ; candidates : string list
+    ; history : (string * result) list
+    }
+
+  let score2 freq str =
+    let chars = explode str in
+    List.fold_left
+      ( fun total ch ->
+          let f = Hashtbl.find freq ch
+          in
+          total + f
+      )
+      0
+      chars
+
+  let sorted_candidates2 freq strs =
+    let with_scores =
+      List.map (fun str -> (str, score2 freq str)) strs
+    in List.sort
+      ( fun (_, a) (_, b) ->
+          b - a
+      )
+      with_scores
+
+  let initialize dictionary =
+    let freq = frequency_of_strs dictionary
+    in
+    { freq = freq
+    ; candidates =
+        filter_words2 [] dictionary
+        |> sorted_candidates2 freq
+        |> List.map fst
+    ; history = []
+    }
+
+  let guess { candidates; _ } =
+    match candidates with
+    | [] -> raise NoRemainingWordsException
+    | best::_ -> best
+
+  let update {history; freq; candidates} attempt result =
+    let new_history = (attempt, result) :: history
+    in
+    { freq = freq
+    ; candidates =
+        filter_words2 new_history candidates
+        |> sorted_candidates freq
+        |> List.map fst
+    ;  history = new_history
+    }
+end
+
 module Runner (B : Bot) = struct
   let rec run bot target =
     let guess = B.guess bot
@@ -139,14 +194,50 @@ module GreedyAdieuUnityRunner = Runner (GreedyAdieuUnityBot)
   dune exec bin/dojo.exe  97.13s user 0.15s system 99% cpu 1:37.28 total
 *)
 
+module HeadToHead (A : Bot) (B : Bot) = struct
+  module ARunner = Runner (A)
+  module BRunner = Runner (B)
+
+  type score =
+    { a_wins : int
+    ; b_wins : int
+    ; ties : int
+    }
+
+  let string_of_score {a_wins ; b_wins ; ties} =
+    List.map string_of_int [a_wins ; b_wins ; ties]
+    |> String.concat " - "
+
+  let run dictionary samples =
+    let words =
+      List.init samples (fun _ -> Random.int (List.length dictionary))
+      |> List.map (fun idx -> List.nth dictionary idx)
+    and a_bot = A.initialize dictionary
+    and b_bot = B.initialize dictionary
+    in
+    List.fold_left
+      ( fun { a_wins; b_wins; ties } word ->
+          let turns_a = min 7 (ARunner.run a_bot word |> List.length)
+          and turns_b = min 7 (BRunner.run b_bot word |> List.length)
+          in if turns_a < turns_b
+          then { a_wins = a_wins + 1; b_wins ; ties }
+          else if turns_a > turns_b
+          then { a_wins ; b_wins = b_wins + 1; ties }
+          else { a_wins ; b_wins ; ties = ties + 1 }
+      )
+      { a_wins = 0
+      ; b_wins = 0
+      ; ties = 0
+      }
+      words
+end
+
+module GreedyVGreedyAdieu = HeadToHead (GreedyBot) (GreedyNoRepeats)
+
 let () =
+  Random.self_init () ;
   let dictionary = read_lines ()
   in
-  Random.init 1000 ;
-  GreedyAdieuRunner.run_sampled dictionary 10
-  |> List.map (String.concat " -> ")
-  |> String.concat "\n"
+  GreedyVGreedyAdieu.run dictionary 100
+  |> GreedyVGreedyAdieu.string_of_score
   |> print_endline
-(* GreedyAdieuUnityRunner.average dictionary
-   |> string_of_float
-   |> print_endline *)
