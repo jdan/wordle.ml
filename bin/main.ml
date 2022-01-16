@@ -2,18 +2,19 @@ open Wordle.Seacher
 open Wordle.Evaluator
 open Wordle.Util
 
-(* Finding the word "great" *)
+(* Finding the word "cheat" *)
 let rules =
-  [ ("aeros", [Yellow; Yellow; Yellow; Black; Black])
-  ; ("raile", [Yellow; Yellow; Black; Black; Yellow])
-  ; ("tread", [Yellow; Green; Green; Green; Black])
+  [ ("arose", [Yellow; Black; Black; Black; Yellow])
+  ; ("telia", [Yellow; Yellow; Black; Black; Yellow])
+  ; ("enact", [Yellow; Black; Yellow; Yellow; Green])
+  ; ("cadet", [Green; Yellow; Black; Yellow; Green])
   ]
 
 let () =
   let words = read_lines ()
   in let freq = frequency_of_strs words
   in
-  filter_words2 rules words
+  filter_words rules words
   |> sorted_candidates freq
   |> List.iter (
     fun (word, score) ->

@@ -30,15 +30,6 @@ These candidates are sorted by a very rough heuristic:
 * For each letter, add the number of times that letter appears in any word
 * Multiply by the number of unique letters (more letters means more clues!)
 
-#### rules reference
-
-Given a target string, the following rules are used as follows:
-
-* `Exact (ch, idx)` - The character at index `idx` is equal to `ch`
-* `Other (ch, idx)` - Character `ch` is found at an index not equal to `idx`
-* `Never ch` - The character `ch` never appears in the string
-* `AtLeast (ch, count)` - The character `ch` appears in the string at least `count` times
-
 ### results
 
 It works okay! I cheated on day 197 starting with "SIREN"
@@ -57,109 +48,100 @@ Set `rules` to `[]` and run:
 
 ```sh
 cat words.txt | dune exec bin/main.exe | head
-# arose 84745
-# orate 84735
-# arise 83645
-# raise 83645
-# serai 83645
-# arite 83635
-# irate 83635
-# retia 83635
-# tarie 83635
-# ariel 83570
+# aeros 139565
+# arose 139565
+# soare 139565
+# aesir 136170
+# arise 136170
+# raise 136170
+# reais 136170
+# serai 136170
+# aloes 135630
+# stoae 135250
 ```
 
 Manually computing this, "AROSE" would get a pattern of 🟨⬛⬛⬛🟨. Modify `rules` accordingly and re-run:
 
 ```ocaml
 let rules =
-  [ Other ('a', 0)
-  ; Never 'r'
-  ; Never 'o'
-  ; Never 's'
-  ; Other ('e', 4)
+  [ ("arose", [Yellow; Black; Black; Black; Yellow])
   ]
 ```
 
 ```sh
 cat words.txt | dune exec bin/main.exe | head
-# laeti 80260
-# entia 79490
-# tenai 79490
-# tinea 79490
-# elain 79425
-# linea 79425
-# ental 78425
-# laten 78425
-# leant 78425
-# ileac 76085
+# telia 115385
+# elain 113670
+# entia 113290
+# tenia 113290
+# tinea 113290
+# laten 111350
+# leant 111350
+# eliad 111175
+# ideal 111175
+# lutea 109145
 ```
 
-LATEN corresponds to a pattern of ⬛🟨🟩🟨⬛.
+TELIA corresponds to a pattern of 🟨🟨⬛⬛🟨.
 
 ```ocaml
 let rules =
-  [ Other ('a', 0)
-  ; Never 'r'
-  ; Never 'o'
-  ; Never 's'
-  ; Other ('e', 4)
-
-  ; Never 'l'
-  ; Other ('a', 1)
-  ; Exact ('e', 2)
-  ; Other ('t', 3)
-  ; Never 'i'
+  [ ("arose", [Yellow; Black; Black; Black; Yellow])
+  ; ("telia", [Yellow; Yellow; Black; Black; Yellow])
   ]
 ```
 
 ```sh
 cat words.txt | dune exec bin/main.exe | head
-# upeat 71385
-# cheat 69860
-# theca 69860
-# thema 68635
-# wheat 65555
-# tweag 64450
-# tweak 63350
-# theat 59228
-# theta 59228
-# theah 54996
+# enact 104635
+# paten 104590
+# manet 104375
+# eaten 102244
+# cadet 102140
+# pated 102095
+# mated 101880
+# hated 100800
+# gated 100220
+# bated 100135
 ```
 
-Though UPEAT is likely not in Wordle's dictionary, we'll run with it using a pattern of ⬛⬛🟩🟩🟩.
+ENACT is the top-ranked choice, with an evaluation of 🟨⬛🟨🟨🟩.
 
 ```ocaml
 let rules =
-  [ Other ('a', 0)
-  ; Never 'r'
-  ; Never 'o'
-  ; Never 's'
-  ; Other ('e', 4)
-
-  ; Never 'l'
-  ; Other ('a', 1)
-  ; Exact ('e', 2)
-  ; Other ('t', 3)
-  ; Never 'i'
-
-  ; Never 'u'
-  ; Never 'p'
-  ; Exact ('e', 2)
-  ; Exact ('a', 3)
-  ; Exact ('t', 4)
+  [ ("arose", [Yellow; Black; Black; Black; Yellow])
+  ; ("telia", [Yellow; Yellow; Black; Black; Yellow])
+  ; ("enact", [Yellow; Black; Yellow; Yellow; Green])
   ]
 ```
 
 ```sh
 cat words.txt | dune exec bin/main.exe | head
-# cheat 69860
-# wheat 65555
+# cadet 102140
+# cheat 98675
+# facet 95450
 ```
 
-CHEAT wins out against WHEAT (C's are more common), giving us a successful solution.
+CADET gets top billing, with an evaluation of 🟩🟨⬛🟨🟩.
+
+```ocaml
+let rules =
+  [ ("arose", [Yellow; Black; Black; Black; Yellow])
+  ; ("telia", [Yellow; Yellow; Black; Black; Yellow])
+  ; ("enact", [Yellow; Black; Yellow; Yellow; Green])
+  ; ("cadet", [Green; Yellow; Black; Yellow; Green])
+  ]
+```
+
+```sh
+cat words.txt | dune exec bin/main.exe | head
+# cheat 98675
+```
+
+And finally, we arrive at CHEAT 🟩🟩🟩🟩🟩.
 
 🟨⬛⬛⬛🟨<br>
-⬛🟨🟩🟨⬛<br>
-⬛⬛🟩🟩🟩<br>
+🟨🟨⬛⬛🟨<br>
+🟨⬛🟨🟨🟩<br>
+🟩🟨⬛🟨🟩<br>
 🟩🟩🟩🟩🟩

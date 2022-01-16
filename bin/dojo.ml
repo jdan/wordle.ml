@@ -23,7 +23,7 @@ module GreedyBot : Bot = struct
     in
     { freq = freq
     ; candidates =
-        filter_words2 [] dictionary
+        filter_words [] dictionary
         |> sorted_candidates freq
         |> List.map fst
     ; history = []
@@ -39,7 +39,7 @@ module GreedyBot : Bot = struct
     in
     { freq = freq
     ; candidates =
-        filter_words2 new_history candidates
+        filter_words new_history candidates
         |> sorted_candidates freq
         |> List.map fst
     ;  history = new_history
@@ -78,7 +78,7 @@ module GreedyNoRepeats : Bot = struct
     in
     { freq = freq
     ; candidates =
-        filter_words2 [] dictionary
+        filter_words [] dictionary
         |> sorted_candidates2 freq
         |> List.map fst
     ; history = []
@@ -94,7 +94,7 @@ module GreedyNoRepeats : Bot = struct
     in
     { freq = freq
     ; candidates =
-        filter_words2 new_history candidates
+        filter_words new_history candidates
         |> sorted_candidates freq
         |> List.map fst
     ;  history = new_history
