@@ -234,10 +234,42 @@ end
 
 module GreedyVGreedyAdieu = HeadToHead (GreedyBot) (GreedyNoRepeats)
 
-let () =
+let string_of_guess_list guesses =
+  let goal = List.nth guesses (List.length guesses - 1) in
+  let string_of_evaluation e =
+    List.map
+      ( function
+        | Black -> "⬛️"
+        | Yellow -> "🟨"
+        | Green -> "🟩"
+      )
+      e
+    |> String.concat ""
+  in
+  List.map (fun guess ->
+      String.uppercase_ascii guess
+      ^ " "
+      ^ string_of_evaluation (evaluate guess goal)
+    )
+    guesses
+  |> String.concat "\n"
+
+let simulate dictionary target =
+  let bot = GreedyBot.initialize dictionary
+  in
+  GreedyRunner.run bot target
+  |> string_of_guess_list
+  |> print_endline
+
+let versus () =
   Random.self_init () ;
   let dictionary = read_lines ()
   in
   GreedyVGreedyAdieu.run dictionary 100
   |> GreedyVGreedyAdieu.string_of_score
   |> print_endline
+
+let () =
+  let dictionary = read_lines ()
+  in
+  simulate dictionary "proxy"
