@@ -272,4 +272,4 @@ let versus () =
 let () =
   let dictionary = read_lines ()
   in
-  simulate dictionary "proxy"
+  Sys.argv.(1) |> simulate dictionary
